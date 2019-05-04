@@ -27,7 +27,7 @@ Display random letters on a grid. (In progress)
 - Use a 10x10 grid.
 - Populate letters
 
-Display the selected words and display them on the screen. **HARD** (Pending)
+Display the selected words and display them on the screen. **HARD** (In Progress)
 - 6 directions (backwards and vertical, backwards and horizontal, backwards and diagonal, and regular with all the directions)
 - Randomize where they are placed.
 
