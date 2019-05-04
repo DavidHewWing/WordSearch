@@ -19,11 +19,11 @@ Shopify Internship Challenge Fall 2019
 10. Allow the user to find the words by swiping over the words.
 
 # Steps
-Load words from a file. (In progress)
+Load words from a file. (Pending)
 - Get dictionary.txt
 - Randomly select words from the dictionary
 
-Display random letters on a grid. (Pending)
+Display random letters on a grid. (In progress)
 - Use a 10x10 grid.
 - Populate letters
 
