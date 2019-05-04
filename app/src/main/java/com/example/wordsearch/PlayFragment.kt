@@ -12,6 +12,7 @@ import android.view.ViewTreeObserver
 import android.widget.Button
 import android.widget.TableLayout
 import android.widget.TableRow
+import android.widget.TextView
 import kotlinx.android.synthetic.main.fragment_play.*
 
 class PlayFragment : Fragment() {
@@ -62,15 +63,20 @@ class PlayFragment : Fragment() {
             row.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT)
             for(j in 0 until this.columnSize) {
-                val button = Button(context)
-                button.apply {
+                val tv = TextView(context)
+                tv.apply {
                     layoutParams = TableRow.LayoutParams(width, height, 1.0F)
-                    text = "R $i C $j"
+                    text = "A"
                 }
-                row.addView(button)
+                row.addView(tv)
             }
             wordLayout?.addView(row)
         }
+    }
+
+    private fun randomizeLetters() {
+        val words = arrayOf("SWIFT", "KOTLIN", "OBJECTIVEC", "VARIABLE", "JAVA", "MOBILE")
+
     }
 
     companion object {
