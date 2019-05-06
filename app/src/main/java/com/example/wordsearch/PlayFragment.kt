@@ -100,7 +100,6 @@ class PlayFragment : Fragment() {
     }
 
     private fun placeVertically(backwards: Boolean, word: String) {
-        Log.d("Tag", word)
         if (backwards) {
             var wordToBePlaced = word.reversed()
         } else { // normal
@@ -122,26 +121,46 @@ class PlayFragment : Fragment() {
              */
             var valid = false
             while (!valid) {
+                valid = false
+                var foundPlacement = false
                 val randomColumn = (0 until columnIndexes.size).random()
-                var randomColumnIndex = columnIndexes[randomColumn] // index of the random column
+                val randomColumnIndex = columnIndexes[randomColumn] // index of the random column
                 // keep looping through until we find a correct orientation for the specific column
-                while (true) {
+                while (!foundPlacement) {
+                    if(initIndexes.size == 0) break
+                    foundPlacement = false
                     val randomStartingRow = (0 until initIndexes.size).random()
                     var initIndex = initIndexes[randomStartingRow]
                     for (i in 0 until word.length) {
                         val letter = word.substring(i, i + 1)
                         val letterOnGrid = wordGrid[initIndex][randomColumnIndex]
+                        // encountered placement where letter on the grid doesn't line up with word
+                        if(letterOnGrid != letter && letterOnGrid != ""){
+                            Log.d("Yes", "HAHA")
+                            break
+                        }
+                        // no problems add to the grid
                         wordGrid[initIndex][randomColumnIndex] = letter
                         initIndex++
+                        // if at the end of the for loop end loop
+                        if(i == word.length - 1) {
+                            foundPlacement = true
+                            valid = true
+                            Log.d("Tag", "In last loop")
+                        }
                     }
-                    break
+                    if(!foundPlacement) {
+                        initIndexes.removeAt(randomStartingRow)
+                        if(initIndexes.size == 0) {
+                            foundPlacement = true
+                            for (i in 0 until availableStarts) initIndexes.add(i)
+                        }
+                    }
                 }
-                break
+                columnIndexes.removeAt(randomColumn)
             }
         }
     }
-
-    class Placement(var row: Int, var col: Int, var letter: String)
 
     companion object {
         fun newInstance() =
