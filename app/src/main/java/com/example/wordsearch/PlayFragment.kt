@@ -81,8 +81,8 @@ class PlayFragment : Fragment() {
     private fun findLocations() {
         val words = arrayOf("SWIFT", "KOTLIN", "OBJECTIVEC", "VARIABLE", "JAVA", "MOBILE")
         for (word in words) {
-//            val randomBackwards = (0..1).random()
-            val randomBackwards = 1
+            val randomBackwards = (0..1).random()
+//            val randomBackwards = 0
             // val randomDirection = (0..2).random()
             val randomDirection = 0
             val isBackwards = randomBackwards == 0
@@ -100,72 +100,82 @@ class PlayFragment : Fragment() {
     }
 
     private fun placeVertically(backwards: Boolean, word: String) {
+        var wordToBePlaced = word
+        val availableStarts = rowSize - wordToBePlaced.length + 1
+        val columnIndexes = arrayListOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+        val initIndexes = arrayListOf<Int>()
         if (backwards) {
-            var wordToBePlaced = word.reversed()
-        } else { // normal
-            // first only potentially within the length of the board
-            val availableStarts = rowSize - word.length + 1
-            val initIndexes = arrayListOf<Int>()
-            val columnIndexes = arrayListOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+            wordToBePlaced = word.reversed()
+            for(i in columnSize-1 downTo (columnSize - availableStarts))
+                initIndexes.add(i)
+        } else {
             for (i in 0 until availableStarts) initIndexes.add(i)
-            /*
-                randomize the column you are putting it in
-                randomize the row you are putting it in
-                check if there is nothing there,
-                or if the letter currently there is in the right place of the word
-                works? you are done (finish loop)
-                doesn't work?
-                remove the random entry row from the list
-                and pick another one at random
-                end of loop
-             */
-            var valid = false
-            while (!valid) {
-                valid = false
-                var foundPlacement = false
-                val randomColumn = (0 until columnIndexes.size).random()
-                val randomColumnIndex = columnIndexes[randomColumn] // index of the random column
-                // keep looping through until we find a correct orientation for the specific column
-                while (!foundPlacement) {
-                    if(initIndexes.size == 0) break
-                    foundPlacement = false
-                    val randomStartingRow = (0 until initIndexes.size).random()
-                    var initIndex = initIndexes[randomStartingRow]
-                    for (i in 0 until word.length) {
-                        val letter = word.substring(i, i + 1)
-                        val letterOnGrid = wordGrid[initIndex][randomColumnIndex]
-                        // encountered placement where letter on the grid doesn't line up with word
-                        if(letterOnGrid != letter && letterOnGrid != ""){
-                            Log.d("Yes", "HAHA")
-                            break
-                        }
-                        // no problems add to the grid
-                        wordGrid[initIndex][randomColumnIndex] = letter
-                        initIndex++
-                        // if at the end of the for loop end loop
-                        if(i == word.length - 1) {
-                            foundPlacement = true
-                            valid = true
-                            Log.d("Tag", "In last loop")
-                        }
+        }
+        // first only potentially within the length of the board
+        /*
+            randomize the column you are putting it in
+            randomize the row you are putting it in
+            check if there is nothing there,
+            or if the letter currently there is in the right place of the word
+            works? you are done (finish loop)
+            doesn't work?
+            remove the random entry row from the list
+            and pick another one at random
+            end of loop
+         */
+        var valid = false
+        while (!valid) {
+            valid = false
+            var foundPlacement = false
+            val randomColumn = (0 until columnIndexes.size).random()
+            val randomColumnIndex = columnIndexes[randomColumn] // index of the random column
+            // keep looping through until we find a correct orientation for the specific column
+            while (!foundPlacement) {
+                if (initIndexes.size == 0) break
+                foundPlacement = false
+                val randomStartingRow = (0 until initIndexes.size).random()
+                var initIndex = initIndexes[randomStartingRow]
+                for (i in 0 until word.length) {
+                    val letter = word.substring(i, i + 1)
+                    val letterOnGrid = wordGrid[initIndex][randomColumnIndex]
+                    // encountered placement where letter on the grid doesn't line up with word
+                    if (letterOnGrid != letter && letterOnGrid != "") {
+                        break
                     }
-                    if(!foundPlacement) {
-                        initIndexes.removeAt(randomStartingRow)
-                        if(initIndexes.size == 0) {
-                            foundPlacement = true
+                    // no problems add to the grid
+                    wordGrid[initIndex][randomColumnIndex] = letter
+                    if(backwards) {
+                        initIndex--
+                    } else {
+                        initIndex++
+                    }
+                    // if at the end of the for loop end loop
+                    if (i == word.length - 1) {
+                        foundPlacement = true
+                        valid = true
+                    }
+                }
+                if (!foundPlacement) {
+                    initIndexes.removeAt(randomStartingRow)
+                    if (initIndexes.size == 0) {
+                        foundPlacement = true
+                        if(backwards) {
+                            for(i in columnSize-1 downTo (columnSize - availableStarts))
+                                initIndexes.add(i)
+                        } else {
                             for (i in 0 until availableStarts) initIndexes.add(i)
                         }
                     }
                 }
-                columnIndexes.removeAt(randomColumn)
             }
+            columnIndexes.removeAt(randomColumn)
         }
-    }
+}
 
-    companion object {
-        fun newInstance() =
-            PlayFragment().apply {
+companion object {
+    fun newInstance() =
+        PlayFragment().apply {
 
-            }
-    }
+        }
+}
 }
