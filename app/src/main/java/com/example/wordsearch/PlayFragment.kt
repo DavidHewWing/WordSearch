@@ -83,8 +83,8 @@ class PlayFragment : Fragment() {
         for (word in words) {
             val randomBackwards = (0..1).random()
 //            val randomBackwards = 0
-            // val randomDirection = (0..2).random()
-            val randomDirection = 0
+             val randomDirection = (0..2).random()
+//            val randomDirection = 1
             val isBackwards = randomBackwards == 0
             var direction = ""
             if (randomDirection == 0) {
@@ -92,20 +92,71 @@ class PlayFragment : Fragment() {
                 placeVertically(isBackwards, word)
             } else if (randomDirection == 1) {
                 // horizontal placement
-                direction = "horizontal"
+                placeHorizontally(isBackwards, word)
             } else {
                 direction = "diagonal"
             }
         }
     }
 
+    private fun placeHorizontally(backwards: Boolean, word: String) {
+        val availableStarts = columnSize - word.length + 1
+        val rowIndexes = arrayListOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+        val initIndexes = arrayListOf<Int>()
+        if (backwards) {
+           for(i in rowSize-1 downTo (rowSize-availableStarts)) initIndexes.add(i)
+        } else {
+            for(i in 0 until availableStarts) initIndexes.add(i)
+        }
+        var valid = false
+        while (!valid) {
+            valid = false
+            var foundPlacement = false
+            val randomRow = (0 until rowIndexes.size).random()
+            val randomRowIndex = rowIndexes[randomRow]
+            while (!foundPlacement) {
+                if (initIndexes.size == 0) break
+                foundPlacement = false
+                val randomStartingColumn = (0 until initIndexes.size).random()
+                var initIndex = initIndexes[randomStartingColumn]
+                for(i in 0 until word.length) {
+                    val letter = word.substring(i, i+1)
+                    val letterOnGrid = wordGrid[randomRowIndex][initIndex]
+                    if(letterOnGrid != letter && letterOnGrid != "") {
+                        break
+                    }
+                    wordGrid[randomRowIndex][initIndex] = letter
+                    if(backwards) {
+                        initIndex--
+                    } else {
+                        initIndex++
+                    }
+                    if(i == word.length - 1) {
+                        foundPlacement = true
+                        valid = true
+                    }
+                }
+                if(!foundPlacement) {
+                    initIndexes.removeAt(randomStartingColumn)
+                    if(initIndexes.size == 0) {
+                        foundPlacement = true
+                        if(backwards) {
+                            for(i in rowSize-1 downTo (rowSize-availableStarts)) initIndexes.add(i)
+                        } else {
+                            for(i in 0 until availableStarts) initIndexes.add(i)
+                        }
+                    }
+                }
+            }
+            rowIndexes.removeAt(randomRow)
+        }
+    }
+
     private fun placeVertically(backwards: Boolean, word: String) {
-        var wordToBePlaced = word
-        val availableStarts = rowSize - wordToBePlaced.length + 1
+        val availableStarts = rowSize - word.length + 1
         val columnIndexes = arrayListOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
         val initIndexes = arrayListOf<Int>()
         if (backwards) {
-            wordToBePlaced = word.reversed()
             for(i in columnSize-1 downTo (columnSize - availableStarts))
                 initIndexes.add(i)
         } else {
