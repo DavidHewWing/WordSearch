@@ -11,6 +11,7 @@ import android.widget.TableLayout
 import android.widget.TableRow
 import android.widget.TextView
 import kotlinx.android.synthetic.main.fragment_play.*
+import java.lang.Math.abs
 
 class PlayFragment : Fragment() {
 
@@ -83,8 +84,8 @@ class PlayFragment : Fragment() {
         for (word in words) {
             val randomBackwards = (0..1).random()
 //            val randomBackwards = 0
-             val randomDirection = (0..2).random()
-//            val randomDirection = 1
+             val randomDirection = (0..1).random()
+//            val randomDirection = 0
             val isBackwards = randomBackwards == 0
             var direction = ""
             if (randomDirection == 0) {
@@ -119,13 +120,23 @@ class PlayFragment : Fragment() {
                 foundPlacement = false
                 val randomStartingColumn = (0 until initIndexes.size).random()
                 var initIndex = initIndexes[randomStartingColumn]
+                var rollback = 0
                 for(i in 0 until word.length) {
                     val letter = word.substring(i, i+1)
                     val letterOnGrid = wordGrid[randomRowIndex][initIndex]
                     if(letterOnGrid != letter && letterOnGrid != "") {
+                        val startingIndex = initIndexes[randomStartingColumn]
+                        for(j in 0 until abs(startingIndex-initIndex)) {
+                            if(!backwards){
+                                wordGrid[randomRowIndex][startingIndex + j] = ""
+                            } else {
+                                wordGrid[randomRowIndex][startingIndex - j] = ""
+                            }
+                        }
                         break
                     }
                     wordGrid[randomRowIndex][initIndex] = letter
+                    rollback++
                     if(backwards) {
                         initIndex--
                     } else {
@@ -191,6 +202,14 @@ class PlayFragment : Fragment() {
                     val letterOnGrid = wordGrid[initIndex][randomColumnIndex]
                     // encountered placement where letter on the grid doesn't line up with word
                     if (letterOnGrid != letter && letterOnGrid != "") {
+                        val startingIndex = initIndexes[randomStartingRow]
+                        for(j in 0 until abs(startingIndex-initIndex)) {
+                            if(!backwards){
+                                wordGrid[startingIndex + j][randomColumnIndex] = ""
+                            } else {
+                                wordGrid[startingIndex - j][randomColumnIndex] = ""
+                            }
+                        }
                         break
                     }
                     // no problems add to the grid
