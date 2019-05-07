@@ -2,6 +2,8 @@
 
 Shopify Internship Challenge Fall 2019
 
+What I am doing RN: Setting up the words diagonally
+
 **CORE**
 
 1. Create a word search mobile app for Android or iOS (depending on the discipline you’re applying to).
