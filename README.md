@@ -2,7 +2,7 @@
 
 Shopify Internship Challenge Fall 2019
 
-What I am doing RN: Setting up the words diagonally
+What I am doing RN: Only let you place diagonal words when it is a short word, and add alphabet fillers to the grid
 
 **CORE**
 
