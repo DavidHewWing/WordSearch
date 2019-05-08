@@ -80,14 +80,14 @@ class PlayFragment : Fragment() {
     }
 
     private fun findLocations() {
-        val words = arrayOf("SWIFT", "KOTLIN", "OBJECTIVEC", "VARIABLE", "JAVA", "MOBILE")
+//        val words = arrayOf("SWIFT", "KOTLIN", "OBJECTIVEC", "VARIABLE", "JAVA", "MOBILE")
+        val words = arrayOf("SWIFT", "KOTLIN", "JAVA", "MOBILE", "NICE", "WOWZA", "HAHAHA")
         for (word in words) {
             val randomBackwards = (0..1).random()
 //            val randomBackwards = 0
-             val randomDirection = (0..1).random()
-//            val randomDirection = 0
+             val randomDirection = (0..2).random()
+//            val randomDirection = 2
             val isBackwards = randomBackwards == 0
-            var direction = ""
             if (randomDirection == 0) {
                 // vertically
                 placeVertically(isBackwards, word)
@@ -95,7 +95,72 @@ class PlayFragment : Fragment() {
                 // horizontal placement
                 placeHorizontally(isBackwards, word)
             } else {
-                direction = "diagonal"
+                placeDiagonally(isBackwards, word)
+            }
+        }
+    }
+
+    private fun placeDiagonally(backwards: Boolean, word: String) {
+        // set up all available columns and rows you can start from
+        val availableColumns = columnSize - word.length + 1
+        val availableRows = rowSize - word.length + 1
+        val initColumnIndexes = arrayListOf<Int>()
+        val initRowIndexes = arrayListOf<Int>()
+        if (backwards) {
+            for(i in columnSize-1 downTo (columnSize - availableColumns)) initColumnIndexes.add(i)
+            for(i in rowSize-1 downTo (rowSize - availableRows)) initRowIndexes.add(i)
+        } else {
+            for (i in 0 until availableColumns) initColumnIndexes.add(i)
+            for (i in 0 until availableRows) initRowIndexes.add(i)
+        }
+        var foundPlacement = false
+        while (!foundPlacement) {
+            foundPlacement = false
+            val randomColumn = (0 until initColumnIndexes.size).random()
+            val randomRow = (0 until initRowIndexes.size).random()
+            var initRowIndex = initRowIndexes[randomRow]
+            var initColumnIndex = initColumnIndexes[randomColumn]
+            for (i in 0 until word.length) {
+                val letter = word.substring(i, i + 1)
+                val letterOnGrid = wordGrid[initColumnIndex][initRowIndex]
+                if (letterOnGrid != letter && letterOnGrid != "") {
+                    val startingRow = initRowIndexes[randomRow]
+                    val startingColumn = initColumnIndexes[randomColumn]
+                    for(j in 0 until abs(startingRow - initRowIndex)){
+                        if(!backwards){
+                            wordGrid[startingColumn + j][startingRow + j] = ""
+                        } else {
+                            wordGrid[startingColumn - j][startingRow - j] = ""
+                        }
+                    }
+                    break
+                }
+                wordGrid[initColumnIndex][initRowIndex] = letter
+                if(backwards){
+                    initColumnIndex--
+                    initRowIndex--
+                } else {
+                    initColumnIndex++
+                    initRowIndex++
+                }
+
+                if (i == word.length - 1) {
+                    foundPlacement = true
+                }
+            }
+            if (!foundPlacement) {
+                initColumnIndexes.removeAt(randomColumn)
+                initRowIndexes.removeAt(randomRow)
+                if (initColumnIndexes.size == 0 || initRowIndexes.size == 0) {
+                    foundPlacement = true
+                    if (backwards) {
+                        for(i in columnSize-1 downTo (columnSize - availableColumns)) initColumnIndexes.add(i)
+                        for(i in rowSize-1 downTo (rowSize - availableRows)) initRowIndexes.add(i)
+                    } else {
+                        for (i in 0 until availableColumns) initColumnIndexes.add(i)
+                        for (i in 0 until availableRows) initRowIndexes.add(i)
+                    }
+                }
             }
         }
     }
@@ -105,9 +170,9 @@ class PlayFragment : Fragment() {
         val rowIndexes = arrayListOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
         val initIndexes = arrayListOf<Int>()
         if (backwards) {
-           for(i in rowSize-1 downTo (rowSize-availableStarts)) initIndexes.add(i)
+            for (i in rowSize - 1 downTo (rowSize - availableStarts)) initIndexes.add(i)
         } else {
-            for(i in 0 until availableStarts) initIndexes.add(i)
+            for (i in 0 until availableStarts) initIndexes.add(i)
         }
         var valid = false
         while (!valid) {
@@ -120,14 +185,13 @@ class PlayFragment : Fragment() {
                 foundPlacement = false
                 val randomStartingColumn = (0 until initIndexes.size).random()
                 var initIndex = initIndexes[randomStartingColumn]
-                var rollback = 0
-                for(i in 0 until word.length) {
-                    val letter = word.substring(i, i+1)
+                for (i in 0 until word.length) {
+                    val letter = word.substring(i, i + 1)
                     val letterOnGrid = wordGrid[randomRowIndex][initIndex]
-                    if(letterOnGrid != letter && letterOnGrid != "") {
+                    if (letterOnGrid != letter && letterOnGrid != "") {
                         val startingIndex = initIndexes[randomStartingColumn]
-                        for(j in 0 until abs(startingIndex-initIndex)) {
-                            if(!backwards){
+                        for (j in 0 until abs(startingIndex - initIndex)) {
+                            if (!backwards) {
                                 wordGrid[randomRowIndex][startingIndex + j] = ""
                             } else {
                                 wordGrid[randomRowIndex][startingIndex - j] = ""
@@ -136,25 +200,24 @@ class PlayFragment : Fragment() {
                         break
                     }
                     wordGrid[randomRowIndex][initIndex] = letter
-                    rollback++
-                    if(backwards) {
+                    if (backwards) {
                         initIndex--
                     } else {
                         initIndex++
                     }
-                    if(i == word.length - 1) {
+                    if (i == word.length - 1) {
                         foundPlacement = true
                         valid = true
                     }
                 }
-                if(!foundPlacement) {
+                if (!foundPlacement) {
                     initIndexes.removeAt(randomStartingColumn)
-                    if(initIndexes.size == 0) {
+                    if (initIndexes.size == 0) {
                         foundPlacement = true
-                        if(backwards) {
-                            for(i in rowSize-1 downTo (rowSize-availableStarts)) initIndexes.add(i)
+                        if (backwards) {
+                            for (i in rowSize - 1 downTo (rowSize - availableStarts)) initIndexes.add(i)
                         } else {
-                            for(i in 0 until availableStarts) initIndexes.add(i)
+                            for (i in 0 until availableStarts) initIndexes.add(i)
                         }
                     }
                 }
@@ -168,7 +231,7 @@ class PlayFragment : Fragment() {
         val columnIndexes = arrayListOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
         val initIndexes = arrayListOf<Int>()
         if (backwards) {
-            for(i in columnSize-1 downTo (columnSize - availableStarts))
+            for (i in columnSize - 1 downTo (columnSize - availableStarts))
                 initIndexes.add(i)
         } else {
             for (i in 0 until availableStarts) initIndexes.add(i)
@@ -203,8 +266,8 @@ class PlayFragment : Fragment() {
                     // encountered placement where letter on the grid doesn't line up with word
                     if (letterOnGrid != letter && letterOnGrid != "") {
                         val startingIndex = initIndexes[randomStartingRow]
-                        for(j in 0 until abs(startingIndex-initIndex)) {
-                            if(!backwards){
+                        for (j in 0 until abs(startingIndex - initIndex)) {
+                            if (!backwards) {
                                 wordGrid[startingIndex + j][randomColumnIndex] = ""
                             } else {
                                 wordGrid[startingIndex - j][randomColumnIndex] = ""
@@ -214,7 +277,7 @@ class PlayFragment : Fragment() {
                     }
                     // no problems add to the grid
                     wordGrid[initIndex][randomColumnIndex] = letter
-                    if(backwards) {
+                    if (backwards) {
                         initIndex--
                     } else {
                         initIndex++
@@ -229,8 +292,8 @@ class PlayFragment : Fragment() {
                     initIndexes.removeAt(randomStartingRow)
                     if (initIndexes.size == 0) {
                         foundPlacement = true
-                        if(backwards) {
-                            for(i in columnSize-1 downTo (columnSize - availableStarts))
+                        if (backwards) {
+                            for (i in columnSize - 1 downTo (columnSize - availableStarts))
                                 initIndexes.add(i)
                         } else {
                             for (i in 0 until availableStarts) initIndexes.add(i)
@@ -240,12 +303,12 @@ class PlayFragment : Fragment() {
             }
             columnIndexes.removeAt(randomColumn)
         }
-}
+    }
 
-companion object {
-    fun newInstance() =
-        PlayFragment().apply {
+    companion object {
+        fun newInstance() =
+            PlayFragment().apply {
 
-        }
-}
+            }
+    }
 }
