@@ -2,7 +2,7 @@
 
 Shopify Internship Challenge Fall 2019
 
-What I am doing RN: Only let you place diagonal words when it is a short word, and add alphabet fillers to the grid
+What I am doing RN: Swiping Function to get the word
 
 **CORE**
 
@@ -25,11 +25,11 @@ Load words from a file. (Pending)
 - Get dictionary.txt
 - Randomly select words from the dictionary
 
-Display random letters on a grid. (In progress)
+Display random letters on a grid. (DONE)
 - Use a 10x10 grid.
 - Populate letters
 
-Display the selected words and display them on the screen. **HARD** (In Progress)
+Display the selected words and display them on the screen. **HARD** (DONE)
 - 6 directions (backwards and vertical, backwards and horizontal, backwards and diagonal, and regular with all the directions)
 - Randomize where they are placed.
 
