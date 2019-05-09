@@ -2,6 +2,7 @@ package com.example.wordsearch
 
 import android.annotation.SuppressLint
 import android.content.res.Resources
+import android.graphics.Rect
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.util.DisplayMetrics
@@ -58,6 +59,7 @@ class PlayFragment : Fragment() {
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun setupTable() {
         val width = wordLayoutWidth / this.rowSize
         val height = wordLayoutHeight / this.columnSize
@@ -106,7 +108,7 @@ class PlayFragment : Fragment() {
             for (j in 0 until columnSize) {
                 if (wordGrid[i][j] == "") {
                     val randomAlphabet = (0 until 26).random()
-                    wordGrid[i][j] = ""
+                    wordGrid[i][j] = alphabet[randomAlphabet]
                 }
             }
         }
