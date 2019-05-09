@@ -1,5 +1,6 @@
 package com.example.wordsearch
 
+import android.annotation.SuppressLint
 import android.content.res.Resources
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -15,9 +16,10 @@ import java.lang.Math.abs
 
 class PlayFragment : Fragment() {
 
-    private val alphabet: List<Char> = mutableListOf(
-        'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
-        'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
+    private val alphabet: List<String> = mutableListOf(
+        "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L",
+        "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"
+
     )
     private val columnSize = 10
     private val rowSize = 10
@@ -80,22 +82,32 @@ class PlayFragment : Fragment() {
     }
 
     private fun findLocations() {
-//        val words = arrayOf("SWIFT", "KOTLIN", "OBJECTIVEC", "VARIABLE", "JAVA", "MOBILE")
-        val words = arrayOf("SWIFT", "KOTLIN", "JAVA", "MOBILE", "NICE", "WOWZA", "HAHAHA")
+        val words = arrayOf("SWIFT", "KOTLIN", "OBJECTIVEC", "VARIABLE", "JAVA", "MOBILE")
+//        val words = arrayOf("SWIFT", "KOTLIN", "JAVA", "MOBILE", "NICE", "WOWZA", "HAHAHA")
+        val diagThreshold = rowSize * 0.6
         for (word in words) {
             val randomBackwards = (0..1).random()
 //            val randomBackwards = 0
-             val randomDirection = (0..2).random()
+            var randomDirection = (0..2).random()
+            if (word.length > diagThreshold) {
+                randomDirection = (0..1).random()
+            }
 //            val randomDirection = 2
             val isBackwards = randomBackwards == 0
-            if (randomDirection == 0) {
-                // vertically
-                placeVertically(isBackwards, word)
-            } else if (randomDirection == 1) {
-                // horizontal placement
-                placeHorizontally(isBackwards, word)
-            } else {
-                placeDiagonally(isBackwards, word)
+            when (randomDirection) {
+                0 -> // vertically
+                    placeVertically(isBackwards, word)
+                1 -> // horizontal placement
+                    placeHorizontally(isBackwards, word)
+                else -> placeDiagonally(isBackwards, word)
+            }
+        }
+        for (i in 0 until rowSize) {
+            for (j in 0 until columnSize) {
+                if (wordGrid[i][j] == "") {
+                    val randomAlphabet = (0 until 26).random()
+                    wordGrid[i][j] = ""
+                }
             }
         }
     }
@@ -107,8 +119,8 @@ class PlayFragment : Fragment() {
         val initColumnIndexes = arrayListOf<Int>()
         val initRowIndexes = arrayListOf<Int>()
         if (backwards) {
-            for(i in columnSize-1 downTo (columnSize - availableColumns)) initColumnIndexes.add(i)
-            for(i in rowSize-1 downTo (rowSize - availableRows)) initRowIndexes.add(i)
+            for (i in columnSize - 1 downTo (columnSize - availableColumns)) initColumnIndexes.add(i)
+            for (i in rowSize - 1 downTo (rowSize - availableRows)) initRowIndexes.add(i)
         } else {
             for (i in 0 until availableColumns) initColumnIndexes.add(i)
             for (i in 0 until availableRows) initRowIndexes.add(i)
@@ -126,8 +138,8 @@ class PlayFragment : Fragment() {
                 if (letterOnGrid != letter && letterOnGrid != "") {
                     val startingRow = initRowIndexes[randomRow]
                     val startingColumn = initColumnIndexes[randomColumn]
-                    for(j in 0 until abs(startingRow - initRowIndex)){
-                        if(!backwards){
+                    for (j in 0 until abs(startingRow - initRowIndex)) {
+                        if (!backwards) {
                             wordGrid[startingColumn + j][startingRow + j] = ""
                         } else {
                             wordGrid[startingColumn - j][startingRow - j] = ""
@@ -135,8 +147,11 @@ class PlayFragment : Fragment() {
                     }
                     break
                 }
+                if(i == 0 && letterOnGrid != ""){
+                    break
+                }
                 wordGrid[initColumnIndex][initRowIndex] = letter
-                if(backwards){
+                if (backwards) {
                     initColumnIndex--
                     initRowIndex--
                 } else {
@@ -154,8 +169,8 @@ class PlayFragment : Fragment() {
                 if (initColumnIndexes.size == 0 || initRowIndexes.size == 0) {
                     foundPlacement = true
                     if (backwards) {
-                        for(i in columnSize-1 downTo (columnSize - availableColumns)) initColumnIndexes.add(i)
-                        for(i in rowSize-1 downTo (rowSize - availableRows)) initRowIndexes.add(i)
+                        for (i in columnSize - 1 downTo (columnSize - availableColumns)) initColumnIndexes.add(i)
+                        for (i in rowSize - 1 downTo (rowSize - availableRows)) initRowIndexes.add(i)
                     } else {
                         for (i in 0 until availableColumns) initColumnIndexes.add(i)
                         for (i in 0 until availableRows) initRowIndexes.add(i)
@@ -197,6 +212,9 @@ class PlayFragment : Fragment() {
                                 wordGrid[randomRowIndex][startingIndex - j] = ""
                             }
                         }
+                        break
+                    }
+                    if(i == 0 && letterOnGrid != ""){
                         break
                     }
                     wordGrid[randomRowIndex][initIndex] = letter
@@ -273,6 +291,9 @@ class PlayFragment : Fragment() {
                                 wordGrid[startingIndex - j][randomColumnIndex] = ""
                             }
                         }
+                        break
+                    }
+                    if(i == 0 && letterOnGrid != ""){
                         break
                     }
                     // no problems add to the grid
