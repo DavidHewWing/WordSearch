@@ -3,6 +3,7 @@
              xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
+             app:layout_behavior="@string/appbar_scrolling_view_behavior"
              tools:context=".PlayFragment">
     <LinearLayout
             android:layout_width="match_parent"
@@ -17,13 +18,12 @@
         </TableLayout>
         <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_weight="7"
+                android:layout_weight="6"
                 android:layout_height="match_parent" android:id="@+id/wordBankLayout">
             <Button
                     android:text="Button"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" android:id="@+id/button2" android:layout_weight="2"
-                    android:onClick="displayData"/>
+                    android:layout_height="wrap_content" android:id="@+id/button2" android:layout_weight="2"/>
         </RelativeLayout>
     </LinearLayout>
 </FrameLayout>

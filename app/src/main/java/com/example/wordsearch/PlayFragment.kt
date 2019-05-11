@@ -30,9 +30,12 @@ class PlayFragment : Fragment() {
     private var wordLayoutHeight = 0
 
     private val highlightedMap = HashMap<String, String>()
+    private var initHighlightedRow = -1
+    private var initHighlightedColumn = -1
     private var lastHighlightedRow = -1
     private var lastHighlightedColumn = -1
     private var highlightedLetters = ""
+    private var highlightedCounter = 0
 
     private lateinit var wordGrid: Array<Array<String>>
 
@@ -103,17 +106,15 @@ class PlayFragment : Fragment() {
             val view = v as TableLayout
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
-//                    val columnIndex = floor(event.y / height).toInt()
-//                    val rowIndex = floor(event.x / width).toInt()
-//                    val row = view.getChildAt(columnIndex) as TableRow
-//                    val cell = row.getChildAt(rowIndex) as TextView
-//                    val text = cell.text.toString()
-//                    highlightedLetters += text
-//                    Log.d("Tag", "Column: $columnIndex. Row: $rowIndex. Text: $text. HLetters: $highlightedLetters")
                 }
                 MotionEvent.ACTION_MOVE -> {
                     val columnIndex = floor(event.y / height).toInt()
                     val rowIndex = floor(event.x / width).toInt()
+                    if(initHighlightedRow == -1 && initHighlightedColumn == -1) {
+                        initHighlightedRow = rowIndex
+                        initHighlightedColumn = columnIndex
+                        Log.d("stfu", "$initHighlightedRow $initHighlightedColumn")
+                    }
                     if (columnIndex > -1 && rowIndex > -1 && columnIndex < columnSize && rowIndex < rowSize) {
                         val row = view.getChildAt(columnIndex) as TableRow
                         val cell = row.getChildAt(rowIndex) as TextView
@@ -123,16 +124,54 @@ class PlayFragment : Fragment() {
                             lastHighlightedColumn = columnIndex
                             lastHighlightedRow = rowIndex
                             if (highlightedMap.containsKey(columnIndex.toString() + rowIndex.toString())) {
-                                Log.d("stfu", "contains")
                                 highlightedLetters = highlightedLetters.substring(0, highlightedLetters.length - 1)
                                 highlightedMap.remove(columnIndex.toString() + rowIndex.toString())
                             } else {
-                                highlightedLetters += text
+                                highlightedCounter++
+                                val differenceRow = abs(rowIndex - initHighlightedRow)
+                                val differenceColumn = abs(columnIndex - initHighlightedColumn)
+                                val bottomLeft = rowIndex < initHighlightedRow && columnIndex > initHighlightedColumn
+                                val bottomRight = rowIndex > initHighlightedRow && columnIndex > initHighlightedColumn
+                                val upLeft = rowIndex < initHighlightedRow && columnIndex < initHighlightedColumn
+                                val upRight = rowIndex > initHighlightedRow && columnIndex < initHighlightedColumn
+                                if(differenceRow == differenceColumn && (differenceRow != 0 && differenceColumn != 0)) {
+                                    Log.d("tag", "difference")
+                                    if(bottomLeft) {
+                                        Log.d("Tag", "bottomleft")
+                                        highlightedLetters = ""
+                                        for(i in 0 until differenceRow + 1) {
+                                            highlightedLetters += wordGrid[initHighlightedColumn+i][initHighlightedRow-i]
+                                        }
+                                    }
+                                    if(bottomRight) {
+                                        Log.d("Tag", "bottomright:  $differenceRow init: $initHighlightedRow - $initHighlightedColumn")
+                                        highlightedLetters = ""
+                                        for(i in 0 until differenceRow + 1) {
+                                            highlightedLetters += wordGrid[initHighlightedColumn+i][initHighlightedRow+i]
+                                        }
+                                    }
+                                    if(upLeft) {
+                                        Log.d("Tag", "upleft")
+                                        highlightedLetters = ""
+                                        for(i in 0 until differenceRow + 1) {
+                                            highlightedLetters += wordGrid[initHighlightedColumn-i][initHighlightedRow-i]
+                                        }
+                                    }
+                                    if(upRight) {
+                                        Log.d("Tag", "upright")
+                                        highlightedLetters = ""
+                                        for(i in 0 until differenceRow + 1) {
+                                            highlightedLetters += wordGrid[initHighlightedColumn-i][initHighlightedRow+i]
+                                        }
+                                    }
+                                } else {
+                                    highlightedLetters += text
+                                }
                             }
                             highlightedMap.put(columnIndex.toString() + rowIndex.toString(), text)
                             Log.d(
                                 "wow",
-                                "Column: $columnIndex. Row: $rowIndex. Text: $text. HLetters: $highlightedLetters"
+                                "Column: $columnIndex. Row: $rowIndex. Text: $text. HLetters: $highlightedLetters Init: $initHighlightedColumn"
                             )
                         }
                     }
@@ -140,8 +179,11 @@ class PlayFragment : Fragment() {
                 MotionEvent.ACTION_UP -> {
                     lastHighlightedColumn = -1
                     lastHighlightedRow = -1
+                    initHighlightedRow = -1
+                    initHighlightedColumn = -1
                     highlightedLetters = ""
                     highlightedMap.clear()
+                    highlightedCounter = 0
                     Log.d(
                         "wow",
                         "Column: $lastHighlightedColumn. Row: $lastHighlightedRow. HLetters: $highlightedLetters"
