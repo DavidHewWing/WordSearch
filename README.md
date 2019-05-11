@@ -2,7 +2,7 @@
 
 Shopify Internship Challenge Fall 2019
 
-What I am doing RN: Swiping Function to get the word
+What I am doing RN: Swiping Function to get the word (snap to diagonal words)
 
 **CORE**
 
