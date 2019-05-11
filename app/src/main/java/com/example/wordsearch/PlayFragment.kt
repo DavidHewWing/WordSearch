@@ -134,38 +134,62 @@ class PlayFragment : Fragment() {
                                 val bottomRight = rowIndex > initHighlightedRow && columnIndex > initHighlightedColumn
                                 val upLeft = rowIndex < initHighlightedRow && columnIndex < initHighlightedColumn
                                 val upRight = rowIndex > initHighlightedRow && columnIndex < initHighlightedColumn
+                                // when it is a diagonal moving
                                 if(differenceRow == differenceColumn && (differenceRow != 0 && differenceColumn != 0)) {
-                                    Log.d("tag", "difference")
                                     if(bottomLeft) {
-                                        Log.d("Tag", "bottomleft")
                                         highlightedLetters = ""
                                         for(i in 0 until differenceRow + 1) {
                                             highlightedLetters += wordGrid[initHighlightedColumn+i][initHighlightedRow-i]
                                         }
                                     }
                                     if(bottomRight) {
-                                        Log.d("Tag", "bottomright:  $differenceRow init: $initHighlightedRow - $initHighlightedColumn")
                                         highlightedLetters = ""
                                         for(i in 0 until differenceRow + 1) {
                                             highlightedLetters += wordGrid[initHighlightedColumn+i][initHighlightedRow+i]
                                         }
                                     }
                                     if(upLeft) {
-                                        Log.d("Tag", "upleft")
                                         highlightedLetters = ""
                                         for(i in 0 until differenceRow + 1) {
                                             highlightedLetters += wordGrid[initHighlightedColumn-i][initHighlightedRow-i]
                                         }
                                     }
                                     if(upRight) {
-                                        Log.d("Tag", "upright")
                                         highlightedLetters = ""
                                         for(i in 0 until differenceRow + 1) {
                                             highlightedLetters += wordGrid[initHighlightedColumn-i][initHighlightedRow+i]
                                         }
                                     }
-                                } else {
-                                    highlightedLetters += text
+                                } else if (differenceColumn == 0 && differenceRow != 0) {
+                                    Log.d("Tag", "Across")
+                                    if(initHighlightedRow > rowIndex) {
+                                        Log.d("Tag", "Backwards")
+                                        highlightedLetters = ""
+                                        for(i in 0 until differenceRow + 1) {
+                                            highlightedLetters += wordGrid[initHighlightedColumn][initHighlightedRow - i]
+                                        }
+                                    } else if (initHighlightedRow < rowIndex) {
+                                        Log.d("Tag", "Forwards")
+                                        highlightedLetters = ""
+                                        for(i in 0 until differenceRow + 1) {
+                                            highlightedLetters += wordGrid[initHighlightedColumn][initHighlightedRow + i]
+                                        }
+                                    }
+                                } else if (differenceRow == 0 && differenceColumn != 0){
+                                    Log.d("Tag", "UpDown")
+                                    if(initHighlightedColumn > columnIndex) {
+                                        Log.d("Tag", "Backwards")
+                                        highlightedLetters = ""
+                                        for(i in 0 until differenceColumn + 1) {
+                                            highlightedLetters += wordGrid[initHighlightedColumn - i][initHighlightedRow]
+                                        }
+                                    } else {
+                                        Log.d("Tag", "Forwards")
+                                        highlightedLetters = ""
+                                        for(i in 0 until differenceColumn + 1) {
+                                            highlightedLetters += wordGrid[initHighlightedColumn + i][initHighlightedRow]
+                                        }
+                                    }
                                 }
                             }
                             highlightedMap.put(columnIndex.toString() + rowIndex.toString(), text)
