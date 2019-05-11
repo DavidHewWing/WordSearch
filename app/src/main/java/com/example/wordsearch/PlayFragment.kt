@@ -13,7 +13,9 @@ import android.widget.TableLayout
 import android.widget.TableRow
 import android.widget.TextView
 import kotlinx.android.synthetic.main.fragment_play.*
-import java.lang.Math.abs
+import java.lang.Math.*
+import kotlin.math.ceil
+import kotlin.math.floor
 
 class PlayFragment : Fragment() {
 
@@ -26,6 +28,12 @@ class PlayFragment : Fragment() {
     private val rowSize = 10
     private var wordLayoutWidth = 0
     private var wordLayoutHeight = 0
+
+    private val highlightedMap = HashMap<String, String>()
+    private var lastHighlightedRow = -1
+    private var lastHighlightedColumn = -1
+    private var highlightedLetters = ""
+
     private lateinit var wordGrid: Array<Array<String>>
 
     override fun onCreateView(
@@ -36,11 +44,21 @@ class PlayFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_play, container, false)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         wordGrid = Array(rowSize) { Array(columnSize) { "" } }
         findLocations()
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         initLayouts()
+        button2.setOnClickListener { viewer ->
+            Log.d("haha", "starter")
+            for ((key, value) in highlightedMap) {
+                Log.d("haha", key[0].toString() + key[1].toString() + " = $value")
+            }
+        }
     }
 
     private fun initLayouts() {
@@ -81,6 +99,57 @@ class PlayFragment : Fragment() {
             }
             wordLayout?.addView(row)
         }
+        wordLayout.setOnTouchListener(View.OnTouchListener { v, event ->
+            val view = v as TableLayout
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+//                    val columnIndex = floor(event.y / height).toInt()
+//                    val rowIndex = floor(event.x / width).toInt()
+//                    val row = view.getChildAt(columnIndex) as TableRow
+//                    val cell = row.getChildAt(rowIndex) as TextView
+//                    val text = cell.text.toString()
+//                    highlightedLetters += text
+//                    Log.d("Tag", "Column: $columnIndex. Row: $rowIndex. Text: $text. HLetters: $highlightedLetters")
+                }
+                MotionEvent.ACTION_MOVE -> {
+                    val columnIndex = floor(event.y / height).toInt()
+                    val rowIndex = floor(event.x / width).toInt()
+                    if (columnIndex > -1 && rowIndex > -1 && columnIndex < columnSize && rowIndex < rowSize) {
+                        val row = view.getChildAt(columnIndex) as TableRow
+                        val cell = row.getChildAt(rowIndex) as TextView
+                        val text = cell.text.toString()
+//                        Log.d("Tag", "$text $rowIndex $columnIndex")
+                        if (lastHighlightedColumn != columnIndex || lastHighlightedRow != rowIndex) {
+                            lastHighlightedColumn = columnIndex
+                            lastHighlightedRow = rowIndex
+                            if (highlightedMap.containsKey(columnIndex.toString() + rowIndex.toString())) {
+                                Log.d("stfu", "contains")
+                                highlightedLetters = highlightedLetters.substring(0, highlightedLetters.length - 1)
+                                highlightedMap.remove(columnIndex.toString() + rowIndex.toString())
+                            } else {
+                                highlightedLetters += text
+                            }
+                            highlightedMap.put(columnIndex.toString() + rowIndex.toString(), text)
+                            Log.d(
+                                "wow",
+                                "Column: $columnIndex. Row: $rowIndex. Text: $text. HLetters: $highlightedLetters"
+                            )
+                        }
+                    }
+                }
+                MotionEvent.ACTION_UP -> {
+                    lastHighlightedColumn = -1
+                    lastHighlightedRow = -1
+                    highlightedLetters = ""
+                    highlightedMap.clear()
+                    Log.d(
+                        "wow",
+                        "Column: $lastHighlightedColumn. Row: $lastHighlightedRow. HLetters: $highlightedLetters"
+                    )
+                }
+            }
+            return@OnTouchListener true
+        })
     }
 
     private fun findLocations() {
@@ -149,7 +218,7 @@ class PlayFragment : Fragment() {
                     }
                     break
                 }
-                if(i == 0 && letterOnGrid != ""){
+                if (i == 0 && letterOnGrid != "") {
                     break
                 }
                 wordGrid[initColumnIndex][initRowIndex] = letter
@@ -216,7 +285,7 @@ class PlayFragment : Fragment() {
                         }
                         break
                     }
-                    if(i == 0 && letterOnGrid != ""){
+                    if (i == 0 && letterOnGrid != "") {
                         break
                     }
                     wordGrid[randomRowIndex][initIndex] = letter
@@ -295,7 +364,7 @@ class PlayFragment : Fragment() {
                         }
                         break
                     }
-                    if(i == 0 && letterOnGrid != ""){
+                    if (i == 0 && letterOnGrid != "") {
                         break
                     }
                     // no problems add to the grid

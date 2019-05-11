@@ -33,8 +33,8 @@ class WordGridAdapter: BaseAdapter {
         val letter = this.letterList[position].toString()
 
         val inflater = context!!.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        val letterView = inflater.inflate(R.layout.word_grid_item, null)
-        letterView.wordGridItemTV.text = letter!!
+        val letterView = inflater.inflate(R.layout.word_grid_item , null)
+        letterView.wordGridItemTV.text = letter
 
         return letterView
 
