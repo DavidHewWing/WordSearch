@@ -2,7 +2,9 @@
 
 Shopify Internship Challenge Fall 2019
 
-What I am doing RN: Swiping Function to get the word (snap to diagonal words)
+What I am doing RN: Swipe and release on correct word = eliminate from wordbank
+
+Don't forget to clean up the code
 
 **CORE**
 
