@@ -2,9 +2,7 @@
 
 Shopify Internship Challenge Fall 2019
 
-What I am doing RN: Swipe and release on correct word = eliminate from wordbank
-
-Don't forget to clean up the code
+What I am doing RN: Clean up code
 
 **CORE**
 
