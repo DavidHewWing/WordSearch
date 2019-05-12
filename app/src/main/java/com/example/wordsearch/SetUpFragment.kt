@@ -1,5 +1,6 @@
 package com.example.wordsearch
 
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
@@ -14,6 +15,8 @@ import kotlinx.android.synthetic.main.fragment_set_up.*
 
 class SetUpFragment : Fragment() {
 
+    private var gameData: GameData? = null
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -23,6 +26,11 @@ class SetUpFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
+        activity?.let {
+            gameData = ViewModelProviders.of(it).get(GameData::class.java)
+        }
+
         val list = ArrayList<Int>()
         val wordList = ArrayList<String>()
         wordList.add("SWIFT")
@@ -43,6 +51,12 @@ class SetUpFragment : Fragment() {
         sizeSpinner.setAdapter(adapter)
 
         startButton.setOnClickListener { v ->
+            val spinnerVal = sizeSpinner.selectedItem.toString().toInt()
+            val map = HashMap<String, Any>()
+            map["words"] = wordList
+            map["rowSize"] = spinnerVal
+            map["columnSize"] = spinnerVal
+            gameData?.data?.postValue(map)
             (activity as MainActivity).getViewPager().setCurrentItem(0)
         }
 
@@ -67,7 +81,6 @@ class SetUpFragment : Fragment() {
     companion object {
         fun newInstance() =
             SetUpFragment().apply {
-
             }
     }
 }

@@ -1,6 +1,8 @@
 package com.example.wordsearch
 
 import android.annotation.SuppressLint
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
@@ -13,6 +15,8 @@ import android.widget.TextView
 import kotlinx.android.synthetic.main.fragment_play.*
 import java.lang.Math.*
 import kotlin.math.floor
+import android.support.v4.view.ViewPager.OnPageChangeListener
+
 
 class PlayFragment : Fragment() {
 
@@ -20,12 +24,13 @@ class PlayFragment : Fragment() {
         "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L",
         "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"
     )
-    private var words = arrayListOf("SWIFT", "KOTLIN", "OBJECTIVEC", "VARIABLE", "JAVA", "MOBILE")
+    private var words = arrayListOf("")
     private val wordMap = HashMap<String, IntArray>()
-    private val columnSize = 12
-    private val rowSize = 12
+    private var columnSize = 0
+    private var rowSize = 0
     private var wordLayoutWidth = 0
     private var wordLayoutHeight = 0
+    private var loaded = false
 
     private val colors = arrayOf("#DC143C", "#FFA500", "#FFD700", "#483D8B", "#800080", "#006400", "#0000FF", "#800000")
     private var colorCount = 0
@@ -44,19 +49,44 @@ class PlayFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        val pager = (activity as MainActivity).getViewPager()
+        pager.addOnPageChangeListener(object : OnPageChangeListener {
+            override fun onPageScrollStateChanged(state: Int) {}
+            override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {}
+
+            override fun onPageSelected(position: Int) {
+                if(position == 0) {
+                    Log.d("Tag", "Inside")
+                    activity?.let {
+                        val gameData = ViewModelProviders.of(it).get(GameData::class.java)
+                        observeInput(gameData)
+                    }
+                }
+            }
+        })
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_play, container, false)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        wordGrid = Array(rowSize) { Array(columnSize) { "" } }
-        findLocations()
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initLayouts()
+    }
+
+    private fun observeInput(gameData: GameData) {
+        gameData.data.observe(this, Observer {
+            it?.let {
+                words = it["words"] as ArrayList<String>
+                columnSize = it["columnSize"] as Int
+                rowSize = it["rowSize"] as Int
+                if(rowSize != 0 && columnSize != 0 && !words.isEmpty() && !loaded) {
+                    Log.d("TAG", "Starting Game")
+                    loaded = true
+                    wordGrid = Array(rowSize) { Array(columnSize) { "" } }
+                    findLocations()
+                    initLayouts()
+                }
+            }
+        })
     }
 
     private fun initLayouts() {
@@ -84,17 +114,18 @@ class PlayFragment : Fragment() {
         var count = 0
 
         // max three table rows
-        for(i in 0 until maxRows) {
+        for (i in 0 until maxRows) {
             val row = TableRow(context)
             row.layoutParams
             row.layoutParams = ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             )
-            for(j in 0 until maxCells) {
-                wordMap[words[count]] = intArrayOf(i, j)
-                if(count == words.size)
+            for (j in 0 until maxCells) {
+                Log.d("Tag", count.toString())
+                if (count >= words.size)
                     break
+                wordMap[words[count]] = intArrayOf(i, j)
                 val tv = TextView(context)
                 tv.apply {
                     gravity = Gravity.CENTER
@@ -105,7 +136,7 @@ class PlayFragment : Fragment() {
                 count++
             }
             wordBankLayout?.addView(row)
-            if(count == words.size)
+            if (count == words.size)
                 break
         }
     }
@@ -138,7 +169,7 @@ class PlayFragment : Fragment() {
                 MotionEvent.ACTION_MOVE -> {
                     val columnIndex = floor(event.y / height).toInt()
                     val rowIndex = floor(event.x / width).toInt()
-                    if(initHighlightedRow == -1 && initHighlightedColumn == -1) {
+                    if (initHighlightedRow == -1 && initHighlightedColumn == -1) {
                         initHighlightedRow = rowIndex
                         initHighlightedColumn = columnIndex
                         Log.d("stfu", "$initHighlightedRow $initHighlightedColumn")
@@ -163,144 +194,187 @@ class PlayFragment : Fragment() {
                                 val upLeft = rowIndex < initHighlightedRow && columnIndex < initHighlightedColumn
                                 val upRight = rowIndex > initHighlightedRow && columnIndex < initHighlightedColumn
                                 // when it is a diagonal moving
-                                if(differenceRow == differenceColumn && (differenceRow != 0 && differenceColumn != 0)) {
-                                    for(arr in highlightedIndexes) {
+                                if (differenceRow == differenceColumn && (differenceRow != 0 && differenceColumn != 0)) {
+                                    for (arr in highlightedIndexes) {
                                         val differenceY = arr[0] - columnIndex
                                         val differenceX = arr[1] - rowIndex
-                                        if(differenceY != differenceX) {
+                                        if (differenceY != differenceX) {
                                             val currentRow = view.getChildAt(arr[0]) as TableRow
                                             val currentCell = currentRow.getChildAt(arr[1]) as TextView
                                             currentCell.setTextColor(Color.parseColor("#808080"))
-                                            currentCell.typeface = Typeface.create(currentCell.typeface, Typeface.NORMAL)
+                                            currentCell.typeface =
+                                                Typeface.create(currentCell.typeface, Typeface.NORMAL)
                                         }
                                     }
-                                    if(bottomLeft) {
+                                    if (bottomLeft) {
                                         highlightedLetters = ""
-                                        for(i in 0 until differenceRow + 1) {
-                                            highlightedLetters += wordGrid[initHighlightedColumn+i][initHighlightedRow-i]
+                                        for (i in 0 until differenceRow + 1) {
+                                            highlightedLetters += wordGrid[initHighlightedColumn + i][initHighlightedRow - i]
                                             val currentRow = view.getChildAt(initHighlightedColumn + i) as TableRow
                                             val currentCell = currentRow.getChildAt(initHighlightedRow - i) as TextView
-                                            if(!currentCell.typeface.isBold) {
+                                            if (!currentCell.typeface.isBold) {
                                                 currentCell.setTextColor(Color.parseColor(colors[colorCount]))
                                                 currentCell.setTypeface(null, Typeface.BOLD)
-                                                highlightedIndexes.add(intArrayOf(initHighlightedColumn + i, initHighlightedRow - i))
+                                                highlightedIndexes.add(
+                                                    intArrayOf(
+                                                        initHighlightedColumn + i,
+                                                        initHighlightedRow - i
+                                                    )
+                                                )
                                             }
                                         }
                                     }
-                                    if(bottomRight) {
+                                    if (bottomRight) {
                                         highlightedLetters = ""
-                                        for(i in 0 until differenceRow + 1) {
-                                            highlightedLetters += wordGrid[initHighlightedColumn+i][initHighlightedRow+i]
+                                        for (i in 0 until differenceRow + 1) {
+                                            highlightedLetters += wordGrid[initHighlightedColumn + i][initHighlightedRow + i]
                                             val currentRow = view.getChildAt(initHighlightedColumn + i) as TableRow
                                             val currentCell = currentRow.getChildAt(initHighlightedRow + i) as TextView
-                                            if(!currentCell.typeface.isBold) {
+                                            if (!currentCell.typeface.isBold) {
                                                 currentCell.setTextColor(Color.parseColor(colors[colorCount]))
                                                 currentCell.setTypeface(null, Typeface.BOLD)
-                                                highlightedIndexes.add(intArrayOf(initHighlightedColumn + i, initHighlightedRow + i))
+                                                highlightedIndexes.add(
+                                                    intArrayOf(
+                                                        initHighlightedColumn + i,
+                                                        initHighlightedRow + i
+                                                    )
+                                                )
                                             }
                                         }
                                     }
-                                    if(upLeft) {
+                                    if (upLeft) {
                                         highlightedLetters = ""
-                                        for(i in 0 until differenceRow + 1) {
-                                            highlightedLetters += wordGrid[initHighlightedColumn-i][initHighlightedRow-i]
+                                        for (i in 0 until differenceRow + 1) {
+                                            highlightedLetters += wordGrid[initHighlightedColumn - i][initHighlightedRow - i]
                                             val currentRow = view.getChildAt(initHighlightedColumn - i) as TableRow
                                             val currentCell = currentRow.getChildAt(initHighlightedRow - i) as TextView
-                                            if(!currentCell.typeface.isBold) {
+                                            if (!currentCell.typeface.isBold) {
                                                 currentCell.setTextColor(Color.parseColor(colors[colorCount]))
                                                 currentCell.setTypeface(null, Typeface.BOLD)
-                                                highlightedIndexes.add(intArrayOf(initHighlightedColumn - i, initHighlightedRow - i))
+                                                highlightedIndexes.add(
+                                                    intArrayOf(
+                                                        initHighlightedColumn - i,
+                                                        initHighlightedRow - i
+                                                    )
+                                                )
                                             }
                                         }
                                     }
-                                    if(upRight) {
+                                    if (upRight) {
                                         highlightedLetters = ""
-                                        for(i in 0 until differenceRow + 1) {
-                                            highlightedLetters += wordGrid[initHighlightedColumn-i][initHighlightedRow+i]
+                                        for (i in 0 until differenceRow + 1) {
+                                            highlightedLetters += wordGrid[initHighlightedColumn - i][initHighlightedRow + i]
                                             val currentRow = view.getChildAt(initHighlightedColumn - i) as TableRow
                                             val currentCell = currentRow.getChildAt(initHighlightedRow + i) as TextView
-                                            if(!currentCell.typeface.isBold) {
+                                            if (!currentCell.typeface.isBold) {
                                                 currentCell.setTextColor(Color.parseColor(colors[colorCount]))
                                                 currentCell.setTypeface(null, Typeface.BOLD)
-                                                highlightedIndexes.add(intArrayOf(initHighlightedColumn - i, initHighlightedRow + i))
+                                                highlightedIndexes.add(
+                                                    intArrayOf(
+                                                        initHighlightedColumn - i,
+                                                        initHighlightedRow + i
+                                                    )
+                                                )
                                             }
                                         }
                                     }
                                 } else if (differenceColumn == 0 && differenceRow != 0) {
                                     Log.d("Tag", "Across")
-                                    for(arr in highlightedIndexes) {
+                                    for (arr in highlightedIndexes) {
                                         val differenceY = arr[0] - columnIndex
                                         val differenceX = arr[1] - rowIndex
-                                        if(differenceY != 0 || differenceX == 0) {
+                                        if (differenceY != 0 || differenceX == 0) {
                                             val currentRow = view.getChildAt(arr[0]) as TableRow
                                             val currentCell = currentRow.getChildAt(arr[1]) as TextView
                                             currentCell.setTextColor(Color.parseColor("#808080"))
-                                            currentCell.typeface = Typeface.create(currentCell.typeface, Typeface.NORMAL)
+                                            currentCell.typeface =
+                                                Typeface.create(currentCell.typeface, Typeface.NORMAL)
                                         }
                                     }
-                                    if(initHighlightedRow > rowIndex) {
+                                    if (initHighlightedRow > rowIndex) {
                                         Log.d("Tag", "Backwards")
                                         highlightedLetters = ""
-                                        for(i in 0 until differenceRow + 1) {
+                                        for (i in 0 until differenceRow + 1) {
                                             highlightedLetters += wordGrid[initHighlightedColumn][initHighlightedRow - i]
                                             val currentRow = view.getChildAt(initHighlightedColumn) as TableRow
                                             val currentCell = currentRow.getChildAt(initHighlightedRow - i) as TextView
                                             if (!currentCell.typeface.isBold) {
                                                 currentCell.setTextColor(Color.parseColor(colors[colorCount]))
                                                 currentCell.setTypeface(null, Typeface.BOLD)
-                                                highlightedIndexes.add(intArrayOf(initHighlightedColumn, initHighlightedRow - i))
+                                                highlightedIndexes.add(
+                                                    intArrayOf(
+                                                        initHighlightedColumn,
+                                                        initHighlightedRow - i
+                                                    )
+                                                )
                                             }
                                         }
                                     } else if (initHighlightedRow < rowIndex) {
                                         Log.d("Tag", "Forwards")
                                         highlightedLetters = ""
-                                        for(i in 0 until differenceRow + 1) {
+                                        for (i in 0 until differenceRow + 1) {
                                             highlightedLetters += wordGrid[initHighlightedColumn][initHighlightedRow + i]
                                             val currentRow = view.getChildAt(initHighlightedColumn) as TableRow
                                             val currentCell = currentRow.getChildAt(initHighlightedRow + i) as TextView
                                             if (!currentCell.typeface.isBold) {
                                                 currentCell.setTextColor(Color.parseColor(colors[colorCount]))
                                                 currentCell.setTypeface(null, Typeface.BOLD)
-                                                highlightedIndexes.add(intArrayOf(initHighlightedColumn, initHighlightedRow + i))
+                                                highlightedIndexes.add(
+                                                    intArrayOf(
+                                                        initHighlightedColumn,
+                                                        initHighlightedRow + i
+                                                    )
+                                                )
                                             }
                                         }
                                     }
-                                } else if (differenceRow == 0 && differenceColumn != 0){
+                                } else if (differenceRow == 0 && differenceColumn != 0) {
                                     Log.d("Tag", "UpDown")
-                                    for(arr in highlightedIndexes) {
+                                    for (arr in highlightedIndexes) {
                                         val differenceY = arr[0] - columnIndex
                                         val differenceX = arr[1] - rowIndex
-                                        if(differenceY == 0 || differenceX != 0) {
+                                        if (differenceY == 0 || differenceX != 0) {
                                             val currentRow = view.getChildAt(arr[0]) as TableRow
                                             val currentCell = currentRow.getChildAt(arr[1]) as TextView
                                             currentCell.setTextColor(Color.parseColor("#808080"))
-                                            currentCell.typeface = Typeface.create(currentCell.typeface, Typeface.NORMAL)
+                                            currentCell.typeface =
+                                                Typeface.create(currentCell.typeface, Typeface.NORMAL)
                                         }
                                     }
-                                    if(initHighlightedColumn > columnIndex) {
+                                    if (initHighlightedColumn > columnIndex) {
                                         Log.d("Tag", "Backwards")
                                         highlightedLetters = ""
-                                        for(i in 0 until differenceColumn + 1) {
+                                        for (i in 0 until differenceColumn + 1) {
                                             highlightedLetters += wordGrid[initHighlightedColumn - i][initHighlightedRow]
                                             val currentRow = view.getChildAt(initHighlightedColumn - i) as TableRow
                                             val currentCell = currentRow.getChildAt(initHighlightedRow) as TextView
-                                            if(!currentCell.typeface.isBold) {
+                                            if (!currentCell.typeface.isBold) {
                                                 currentCell.setTextColor(Color.parseColor(colors[colorCount]))
                                                 currentCell.setTypeface(null, Typeface.BOLD)
-                                                highlightedIndexes.add(intArrayOf(initHighlightedColumn - i, initHighlightedRow))
+                                                highlightedIndexes.add(
+                                                    intArrayOf(
+                                                        initHighlightedColumn - i,
+                                                        initHighlightedRow
+                                                    )
+                                                )
                                             }
                                         }
                                     } else {
                                         Log.d("Tag", "Forwards")
                                         highlightedLetters = ""
-                                        for(i in 0 until differenceColumn + 1) {
+                                        for (i in 0 until differenceColumn + 1) {
                                             highlightedLetters += wordGrid[initHighlightedColumn + i][initHighlightedRow]
                                             val currentRow = view.getChildAt(initHighlightedColumn + i) as TableRow
                                             val currentCell = currentRow.getChildAt(initHighlightedRow) as TextView
-                                            if(!currentCell.typeface.isBold){
+                                            if (!currentCell.typeface.isBold) {
                                                 currentCell.setTextColor(Color.parseColor(colors[colorCount]))
                                                 currentCell.setTypeface(null, Typeface.BOLD)
-                                                highlightedIndexes.add(intArrayOf(initHighlightedColumn + i, initHighlightedRow))
+                                                highlightedIndexes.add(
+                                                    intArrayOf(
+                                                        initHighlightedColumn + i,
+                                                        initHighlightedRow
+                                                    )
+                                                )
                                             }
                                         }
                                     }
@@ -315,9 +389,9 @@ class PlayFragment : Fragment() {
                     }
                 }
                 MotionEvent.ACTION_UP -> {
-                    if(words.contains(highlightedLetters)) {
-                        if(highlightedIndexes.size > highlightedLetters.length) {
-                            for(i in highlightedLetters.length until highlightedIndexes.size) {
+                    if (words.contains(highlightedLetters)) {
+                        if (highlightedIndexes.size > highlightedLetters.length) {
+                            for (i in highlightedLetters.length until highlightedIndexes.size) {
                                 val arr = highlightedIndexes[i]
                                 val currentRow = view.getChildAt(arr[0]) as TableRow
                                 val currentCell = currentRow.getChildAt(arr[1]) as TextView
@@ -326,16 +400,15 @@ class PlayFragment : Fragment() {
                             }
                         }
                         val arr = wordMap[highlightedLetters]
-                        Log.d("Tag", arr!![0].toString() + arr!![1].toString())
-                        val bankRow = wordBankLayout.getChildAt(arr[0] + 1) as TableRow
+                        val bankRow = wordBankLayout.getChildAt(arr!![0] + 1) as TableRow
                         val bankTV = bankRow.getChildAt(arr[1]) as TextView
                         bankTV.visibility = View.INVISIBLE
                         wordMap.remove(highlightedLetters)
-                        if(wordMap.isEmpty()) {
+                        if (wordMap.isEmpty()) {
                             winner.visibility = View.VISIBLE
                         }
                     } else {
-                        for(arr in highlightedIndexes) {
+                        for (arr in highlightedIndexes) {
                             val currentRow = view.getChildAt(arr[0]) as TableRow
                             val currentCell = currentRow.getChildAt(arr[1]) as TextView
                             currentCell.setTextColor(Color.parseColor("#808080"))
@@ -351,7 +424,7 @@ class PlayFragment : Fragment() {
                     highlightedMap.clear()
                     highlightedCounter = 0
                     colorCount++
-                    if(colorCount == colors.size - 1){
+                    if (colorCount == colors.size - 1) {
                         colorCount = 0
                     }
                     Log.d(
@@ -465,7 +538,7 @@ class PlayFragment : Fragment() {
     private fun placeHorizontally(backwards: Boolean, word: String) {
         val availableStarts = columnSize - word.length + 1
         val rowIndexes = arrayListOf<Int>()
-        for(i in 0 until columnSize) {
+        for (i in 0 until columnSize) {
             rowIndexes.add(i)
         }
         val initIndexes = arrayListOf<Int>()
@@ -478,7 +551,7 @@ class PlayFragment : Fragment() {
         while (!valid) {
             valid = false
             var foundPlacement = false
-            val randomRow = (0 until rowIndexes.size - 1).random()
+            val randomRow = (0 until rowIndexes.size).random()
             val randomRowIndex = rowIndexes[randomRow]
             while (!foundPlacement) {
                 if (initIndexes.size == 0) break
@@ -532,7 +605,7 @@ class PlayFragment : Fragment() {
     private fun placeVertically(backwards: Boolean, word: String) {
         val availableStarts = rowSize - word.length + 1
         val columnIndexes = arrayListOf<Int>()
-        for(i in 0 until columnSize) {
+        for (i in 0 until columnSize) {
             columnIndexes.add(i)
         }
         val initIndexes = arrayListOf<Int>()
@@ -558,7 +631,7 @@ class PlayFragment : Fragment() {
         while (!valid) {
             valid = false
             var foundPlacement = false
-            val randomColumn = (0 until columnSize - 1).random()
+            val randomColumn = (0 until columnIndexes.size).random()
             val randomColumnIndex = columnIndexes[randomColumn] // index of the random column
             // keep looping through until we find a correct orientation for the specific column
             while (!foundPlacement) {
