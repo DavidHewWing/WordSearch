@@ -9,7 +9,7 @@
                 android:title="Play"/>
         <item
                 android:id="@+id/nav_settings"
-                android:title="Settings"/>
+                android:title="Set-up Game"/>
         <item
                 android:id="@+id/nav_aboutme"
                 android:title="About Me"/>

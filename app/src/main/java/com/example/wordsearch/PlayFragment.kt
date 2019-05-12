@@ -478,7 +478,7 @@ class PlayFragment : Fragment() {
         while (!valid) {
             valid = false
             var foundPlacement = false
-            val randomRow = (0 until rowIndexes.size).random()
+            val randomRow = (0 until rowIndexes.size - 1).random()
             val randomRowIndex = rowIndexes[randomRow]
             while (!foundPlacement) {
                 if (initIndexes.size == 0) break
@@ -558,7 +558,7 @@ class PlayFragment : Fragment() {
         while (!valid) {
             valid = false
             var foundPlacement = false
-            val randomColumn = (0 until columnSize).random()
+            val randomColumn = (0 until columnSize - 1).random()
             val randomColumnIndex = columnIndexes[randomColumn] // index of the random column
             // keep looping through until we find a correct orientation for the specific column
             while (!foundPlacement) {

@@ -10,6 +10,7 @@ import android.support.v4.view.ViewPager
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.Menu
+import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -25,6 +26,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         viewPager = findViewById(R.id.viewPager)
         pagerAdapter = MyViewPagerAdapter(supportFragmentManager)
         viewPager.adapter = pagerAdapter
+        viewPager.setCurrentItem(1)
 
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         val navView: NavigationView = findViewById(R.id.nav_view)
@@ -55,7 +57,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
-            R.id.action_settings -> true
+            R.id.action_settings -> {
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -64,10 +68,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // Handle navigation view item clicks here.
         when (item.itemId) {
             R.id.nav_play -> {
-                // Handle the camera action
+                viewPager.setCurrentItem(0)
             }
             R.id.nav_settings-> {
-
+                viewPager.setCurrentItem(1)
             }
             R.id.nav_aboutme -> {
 
@@ -76,5 +80,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         drawerLayout.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    public fun getViewPager(): ViewPager {
+        if (null == viewPager) {
+            viewPager = findViewById(R.id.viewPager)
+        }
+        return viewPager
     }
 }
