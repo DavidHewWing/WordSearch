@@ -56,6 +56,7 @@ class SetUpFragment : Fragment() {
             map["words"] = wordList
             map["rowSize"] = spinnerVal
             map["columnSize"] = spinnerVal
+            map["loaded"] = false
             gameData?.data?.postValue(map)
             (activity as MainActivity).getViewPager().setCurrentItem(0)
         }

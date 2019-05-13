@@ -78,6 +78,7 @@ class PlayFragment : Fragment() {
                 words = it["words"] as ArrayList<String>
                 columnSize = it["columnSize"] as Int
                 rowSize = it["rowSize"] as Int
+                loaded = it["loaded"] as Boolean
                 if(rowSize != 0 && columnSize != 0 && !words.isEmpty() && !loaded) {
                     Log.d("TAG", "Starting Game")
                     loaded = true
@@ -90,20 +91,11 @@ class PlayFragment : Fragment() {
     }
 
     private fun initLayouts() {
-        val viewTreeObserver: ViewTreeObserver = parentLayout.viewTreeObserver
-        if (viewTreeObserver.isAlive) {
-            viewTreeObserver.addOnGlobalLayoutListener(
-                object : ViewTreeObserver.OnGlobalLayoutListener {
-                    override fun onGlobalLayout() {
-                        viewTreeObserver.removeOnGlobalLayoutListener(this)
-                        wordLayoutHeight = wordLayout.height
-                        wordLayoutWidth = wordLayout.width
-                        setupTable()
-                        setupBank()
-                    }
-                }
-            )
-        }
+        Log.d("Tag", "Init Layout")
+        wordLayoutHeight = wordLayout.height
+        wordLayoutWidth = wordLayout.width
+        setupTable()
+        setupBank()
     }
 
     private fun setupBank() {
@@ -143,6 +135,7 @@ class PlayFragment : Fragment() {
 
     @SuppressLint("ClickableViewAccessibility")
     private fun setupTable() {
+        Log.d("Tag", "Setting up Table")
         val width = wordLayoutWidth / this.rowSize
         val height = wordLayoutHeight / this.columnSize
         for (i in 0 until this.rowSize) {
@@ -389,7 +382,7 @@ class PlayFragment : Fragment() {
                     }
                 }
                 MotionEvent.ACTION_UP -> {
-                    if (words.contains(highlightedLetters)) {
+                    if (words.contains(highlightedLetters) && wordMap.keys.contains(highlightedLetters)) {
                         if (highlightedIndexes.size > highlightedLetters.length) {
                             for (i in highlightedLetters.length until highlightedIndexes.size) {
                                 val arr = highlightedIndexes[i]
@@ -435,6 +428,8 @@ class PlayFragment : Fragment() {
             }
             return@OnTouchListener true
         })
+        Log.d("Tag", "Finished")
+        rootPlayLayout.invalidate()
     }
 
     private fun findLocations() {
@@ -465,6 +460,7 @@ class PlayFragment : Fragment() {
                 }
             }
         }
+        Log.d("Tag", rowSize.toString() + " "+ columnSize.toString())
     }
 
     private fun placeDiagonally(backwards: Boolean, word: String) {
