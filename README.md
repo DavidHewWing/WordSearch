@@ -2,7 +2,9 @@
 
 Shopify Internship Challenge Fall 2019
 
-What I am doing RN: Clean up code
+What I am doing RN: Fix the start new game code
+
+Don't forget to clean up code
 
 **CORE**
 
