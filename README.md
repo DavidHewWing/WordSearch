@@ -14,6 +14,21 @@ https://docs.google.com/document/d/17dFY9G46XMGz1VpLOxHcBZySqXVQ40xMjXcd8cJXeks/
 8. Able to add which words you want to the word search up to a limit
 9. Able to pick a range of grid sizes 10 -> 13
 
+### Screen Shots :camera:
+ 
+From the Challenge Docs :book:
+
+| No words have been found | All words have been found |
+| --- | --- |
+|<img src="https://github.com/DavidHewWing/WordSearch/blob/master/pictures/unsolved.png" width="200"> | <img src="https://github.com/DavidHewWing/WordSearch/blob/master/pictures/solved.png" width="200"> |
+
+Some Extra Fun Features! :fire:
+
+| Swiping Feature | Setup | 
+| --- | --- |
+| <img src="https://github.com/DavidHewWing/WordSearch/blob/master/pictures/demo.gif" width="200"> | <img src="https://github.com/DavidHewWing/WordSearch/blob/master/pictures/setup.png" width="200"> |
+
+
 ### Tasks :pencil:
 Display random letters on a grid. (DONE)
 - Use a 10x10 grid.
