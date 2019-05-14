@@ -2,7 +2,7 @@
 
 Shopify Internship Challenge Fall 2019
 
-What I am doing RN: Fix the start new game code
+What I am doing RN: Splash Screen
 
 Don't forget to clean up code
 
