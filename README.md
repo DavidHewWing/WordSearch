@@ -2,9 +2,9 @@
 
 Shopify Internship Challenge Fall 2019
 
-What I am doing RN: Splash Screen
+What I am doing RN: Code Clean up
 
-Don't forget to clean up code
+Fix UP Read me
 
 **CORE**
 
