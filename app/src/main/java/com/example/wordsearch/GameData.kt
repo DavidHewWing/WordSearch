@@ -2,12 +2,10 @@ package com.example.wordsearch
 
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
-import android.content.ClipData
 
+/**
+ * this data is shared amongst each fragment
+ */
 class GameData : ViewModel() {
-//    private var rowSize: Int = 0
-//    private var columnSize: Int = 0
-//    private var empty: Boolean = false
-//    private var words:ArrayList<String> = arrayListOf("")
     val data = MutableLiveData<HashMap<String, Any>>()
 }

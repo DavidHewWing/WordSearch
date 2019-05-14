@@ -1,8 +1,6 @@
 package com.example.wordsearch
 
 import android.arch.lifecycle.ViewModelProviders
-import android.content.Context
-import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.util.Log
@@ -11,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_set_up.*
 
 class SetUpFragment : Fragment() {
@@ -29,10 +26,12 @@ class SetUpFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
+        // grab the gamedata
         activity?.let {
             gameData = ViewModelProviders.of(it).get(GameData::class.java)
         }
 
+        // add all initial values
         val list = ArrayList<Int>()
         val wordList = ArrayList<String>()
         wordList.add("SWIFT")
@@ -42,7 +41,7 @@ class SetUpFragment : Fragment() {
         wordList.add("JAVA")
         wordList.add("MOBILE")
         val wordAdapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, wordList)
-        wordLV.setAdapter(wordAdapter)
+        wordLV.adapter = wordAdapter
 
         list.add(10)
         list.add(11)
@@ -50,9 +49,10 @@ class SetUpFragment : Fragment() {
         list.add(13)
         val adapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, list)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        sizeSpinner.setAdapter(adapter)
+        sizeSpinner.adapter = adapter
         sizeSpinner.setSelection(2)
 
+        // when you click you send values to the play fragment
         startButton.setOnClickListener { v ->
             val pager = (activity as MainActivity).getViewPager()
             pager.adapter!!.notifyDataSetChanged()
@@ -69,6 +69,7 @@ class SetUpFragment : Fragment() {
             (activity as MainActivity).getViewPager().currentItem = 0
         }
 
+        // adding words to the view
         addButton.setOnClickListener { v ->
             val word = wordET.text.toString()
             val spinnerVal = sizeSpinner.selectedItem.toString().toInt()
