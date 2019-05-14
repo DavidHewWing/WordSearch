@@ -83,7 +83,7 @@ class PlayFragment : Fragment(), Updateable {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_play, container, false)
     }
-    
+
     private fun observeInput(gameData: GameData) {
         gameData.data.observe(this, Observer {
             it?.let {
@@ -352,6 +352,7 @@ class PlayFragment : Fragment(), Updateable {
                                             val currentRow = view.getChildAt(initHighlightedColumn - i) as TableRow
                                             val currentCell = currentRow.getChildAt(initHighlightedRow) as TextView
                                             if (!currentCell.typeface.isBold) {
+                                                Log.d("upLeft", "in Upleft")
                                                 currentCell.setTextColor(Color.parseColor(colors[colorCount]))
                                                 currentCell.setTypeface(null, Typeface.BOLD)
                                                 highlightedIndexes.add(
@@ -394,7 +395,8 @@ class PlayFragment : Fragment(), Updateable {
                 MotionEvent.ACTION_UP -> {
                     if (words.contains(highlightedLetters) && wordMap.keys.contains(highlightedLetters)) {
                         if (highlightedIndexes.size > highlightedLetters.length) {
-                            Log.d("Hello", "World!")
+                            Log.d("Hello", "World! $highlightedLetters - " + highlightedIndexes.size)
+
                             for (i in highlightedLetters.length until highlightedIndexes.size) {
                                 val arr = highlightedIndexes[i]
                                 val currentRow = view.getChildAt(arr[0]) as TableRow
