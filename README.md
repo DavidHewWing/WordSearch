@@ -1,4 +1,5 @@
-# WordSearch - Shopify Internship Challenge Fall 2019
+# WordSearch - Shopify Internship Challenge Fall 2019 :punch::clap:
+
 https://docs.google.com/document/d/17dFY9G46XMGz1VpLOxHcBZySqXVQ40xMjXcd8cJXeks/edit
 
 **Still need to do: Add images to README, explain algorithm on README and APPLY!**
