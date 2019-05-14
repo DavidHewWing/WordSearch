@@ -20,21 +20,6 @@
         <TableLayout
                 android:layout_width="match_parent"
                 android:layout_weight="6"
-                android:layout_height="match_parent" android:id="@+id/wordBankLayout">
-            <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_weight="1"
-                    android:visibility="gone"
-                    android:layout_height="match_parent" android:id="@+id/winner">
-
-                <TextView
-                        android:text="You have won! \n Open menu to start a new game!"
-                        android:textSize="18sp"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent" android:id="@+id/textView4"/>
-            </TableRow>
-        </TableLayout>
+                android:layout_height="match_parent" android:id="@+id/wordBankLayout"/>
     </LinearLayout>
 </FrameLayout>

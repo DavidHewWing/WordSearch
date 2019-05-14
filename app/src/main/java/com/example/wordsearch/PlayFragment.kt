@@ -3,8 +3,10 @@ package com.example.wordsearch
 import android.annotation.SuppressLint
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
+import android.nfc.Tag
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.util.Log
@@ -16,9 +18,14 @@ import kotlinx.android.synthetic.main.fragment_play.*
 import java.lang.Math.*
 import kotlin.math.floor
 import android.support.v4.view.ViewPager.OnPageChangeListener
+import android.widget.Toast
 
+interface Updateable {
+    public fun update()
+}
 
-class PlayFragment : Fragment() {
+class PlayFragment : Fragment(), Updateable {
+
 
     private val alphabet: List<String> = mutableListOf(
         "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L",
@@ -45,6 +52,14 @@ class PlayFragment : Fragment() {
 
     private lateinit var wordGrid: Array<Array<String>>
 
+
+    override fun update() {
+        loaded = false
+        wordGrid = Array(rowSize) { Array(columnSize) { "" } }
+        wordLayout.removeAllViews()
+        wordBankLayout.removeAllViews()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -58,6 +73,7 @@ class PlayFragment : Fragment() {
                 if(position == 0) {
                     Log.d("Tag", "Inside")
                     activity?.let {
+                        Log.d("Tag", "Hello World!")
                         val gameData = ViewModelProviders.of(it).get(GameData::class.java)
                         observeInput(gameData)
                     }
@@ -67,21 +83,16 @@ class PlayFragment : Fragment() {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_play, container, false)
     }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-    }
-
+    
     private fun observeInput(gameData: GameData) {
         gameData.data.observe(this, Observer {
             it?.let {
                 words = it["words"] as ArrayList<String>
                 columnSize = it["columnSize"] as Int
                 rowSize = it["rowSize"] as Int
-                loaded = it["loaded"] as Boolean
+                Log.d("yes", "Starting Game")
                 if(rowSize != 0 && columnSize != 0 && !words.isEmpty() && !loaded) {
-                    Log.d("TAG", "Starting Game")
-                    loaded = true
+                    Log.d("inside", "yes")
                     wordGrid = Array(rowSize) { Array(columnSize) { "" } }
                     findLocations()
                     initLayouts()
@@ -96,6 +107,7 @@ class PlayFragment : Fragment() {
         wordLayoutWidth = wordLayout.width
         setupTable()
         setupBank()
+        loaded = true
     }
 
     private fun setupBank() {
@@ -114,7 +126,6 @@ class PlayFragment : Fragment() {
                 ViewGroup.LayoutParams.WRAP_CONTENT
             )
             for (j in 0 until maxCells) {
-                Log.d("Tag", count.toString())
                 if (count >= words.size)
                     break
                 wordMap[words[count]] = intArrayOf(i, j)
@@ -165,7 +176,6 @@ class PlayFragment : Fragment() {
                     if (initHighlightedRow == -1 && initHighlightedColumn == -1) {
                         initHighlightedRow = rowIndex
                         initHighlightedColumn = columnIndex
-                        Log.d("stfu", "$initHighlightedRow $initHighlightedColumn")
                     }
                     if (columnIndex > -1 && rowIndex > -1 && columnIndex < columnSize && rowIndex < rowSize) {
                         val row = view.getChildAt(columnIndex) as TableRow
@@ -384,6 +394,7 @@ class PlayFragment : Fragment() {
                 MotionEvent.ACTION_UP -> {
                     if (words.contains(highlightedLetters) && wordMap.keys.contains(highlightedLetters)) {
                         if (highlightedIndexes.size > highlightedLetters.length) {
+                            Log.d("Hello", "World!")
                             for (i in highlightedLetters.length until highlightedIndexes.size) {
                                 val arr = highlightedIndexes[i]
                                 val currentRow = view.getChildAt(arr[0]) as TableRow
@@ -393,12 +404,13 @@ class PlayFragment : Fragment() {
                             }
                         }
                         val arr = wordMap[highlightedLetters]
-                        val bankRow = wordBankLayout.getChildAt(arr!![0] + 1) as TableRow
+                        val bankRow = wordBankLayout.getChildAt(arr!![0]) as TableRow
                         val bankTV = bankRow.getChildAt(arr[1]) as TextView
                         bankTV.visibility = View.INVISIBLE
                         wordMap.remove(highlightedLetters)
                         if (wordMap.isEmpty()) {
-                            winner.visibility = View.VISIBLE
+                            Log.d("Tag", "WINNER")
+                            Toast.makeText(context, "You have WON! Open the menu to start again!", Toast.LENGTH_LONG).show()
                         }
                     } else {
                         for (arr in highlightedIndexes) {
@@ -460,7 +472,6 @@ class PlayFragment : Fragment() {
                 }
             }
         }
-        Log.d("Tag", rowSize.toString() + " "+ columnSize.toString())
     }
 
     private fun placeDiagonally(backwards: Boolean, word: String) {

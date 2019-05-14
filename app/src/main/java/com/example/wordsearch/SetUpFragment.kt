@@ -5,6 +5,7 @@ import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +17,7 @@ import kotlinx.android.synthetic.main.fragment_set_up.*
 class SetUpFragment : Fragment() {
 
     private var gameData: GameData? = null
+    private var loaded = -1
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -49,26 +51,32 @@ class SetUpFragment : Fragment() {
         val adapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, list)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         sizeSpinner.setAdapter(adapter)
+        sizeSpinner.setSelection(2)
 
         startButton.setOnClickListener { v ->
+            val pager = (activity as MainActivity).getViewPager()
+            pager.adapter!!.notifyDataSetChanged()
             val spinnerVal = sizeSpinner.selectedItem.toString().toInt()
             val map = HashMap<String, Any>()
+            wordList.sortByDescending { it.length }
+            Log.d("Tag", wordList.toString())
             map["words"] = wordList
             map["rowSize"] = spinnerVal
             map["columnSize"] = spinnerVal
-            map["loaded"] = false
+            loaded++
+            map["loaded"] = loaded
             gameData?.data?.postValue(map)
-            (activity as MainActivity).getViewPager().setCurrentItem(0)
+            (activity as MainActivity).getViewPager().currentItem = 0
         }
 
         addButton.setOnClickListener { v ->
             val word = wordET.text.toString()
             val spinnerVal = sizeSpinner.selectedItem.toString().toInt()
-            if(word.length > spinnerVal) {
+            if (word.length > spinnerVal) {
                 Toast.makeText(context, "Word length must be smaller than the grid size.", Toast.LENGTH_SHORT)
-            }else if(word.length == 0){
+            } else if (word.length == 0) {
                 Toast.makeText(context, "Empty string not allowed.", Toast.LENGTH_SHORT)
-            }else {
+            } else {
                 wordET.setText("")
                 wordList.add(word.toUpperCase())
                 wordAdapter.notifyDataSetChanged()
@@ -83,5 +91,18 @@ class SetUpFragment : Fragment() {
         fun newInstance() =
             SetUpFragment().apply {
             }
+    }
+
+    class MyComparator(reference: String) : java.util.Comparator<String> {
+
+        private val referenceLength: Int = reference.length
+
+        override fun compare(s1: String, s2: String): Int {
+            val dist1 = Math.abs(s1.length - referenceLength)
+            val dist2 = Math.abs(s2.length - referenceLength)
+
+            return dist1 - dist2
+        }
+
     }
 }

@@ -83,7 +83,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
-    public fun getViewPager(): ViewPager {
+    fun getViewPager(): ViewPager {
         if (null == viewPager) {
             viewPager = findViewById(R.id.viewPager)
         }
