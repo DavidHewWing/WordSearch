@@ -23,31 +23,36 @@ From the Challenge Docs :book:
 | --- | --- |
 |<img src="https://github.com/DavidHewWing/WordSearch/blob/master/pictures/unsolved.png" width="200"> | <img src="https://github.com/DavidHewWing/WordSearch/blob/master/pictures/solved.png" width="200"> |
 
-Some Extra Fun Features! :fire:
+### Some Extra Fun Features! :fire:
 
-| Swiping Feature | Setup | 
-| --- | --- |
-| <img src="https://github.com/DavidHewWing/WordSearch/blob/master/pictures/demo.gif" width="200"> | <img src="https://github.com/DavidHewWing/WordSearch/blob/master/pictures/setup.png" width="200"> |
+**The game is replayable!** :tada:
 
+**You can swip to select a word** :tada:
+
+**You can choose words to add into the word search!** :tada:
+
+| Swiping Feature | Setup | Drawer | Splash |
+| --- | --- | --- | --- |
+| <img src="https://github.com/DavidHewWing/WordSearch/blob/master/pictures/demo.gif" width="200"> | <img src="https://github.com/DavidHewWing/WordSearch/blob/master/pictures/setup.png" width="200"> | <img src="https://github.com/DavidHewWing/WordSearch/blob/master/pictures/drawer.png" width="200"> | <img src="https://github.com/DavidHewWing/WordSearch/blob/master/pictures/splash.png" width="200">
 
 ### Tasks :pencil:
-Display random letters on a grid. (DONE)
+Display random letters on a grid. **(DONE)**
 - Use a 10x10 grid.
 - Populate letters
 
-Display the selected words and display them on the screen. **HARD** (DONE)
+Display the selected words and display them on the screen. **(DONE)**
 - 6 directions (backwards and vertical, backwards and horizontal, backwards and diagonal, and regular with all the directions)
 - Randomize where they are placed.
 
-Implement selecting the words **HARD** (DONE)
+Implement selecting the words **(DONE)**
 - Create a swiping function
 - Once swiping keep track of words it has swiped over.
 - If you release, check if the combination of letters is in the selected words array.
 
-Add the User Input (DONE)
+Add the User Input **(DONE)**
 - Able to add a word to the word serach
 - Able to switch grid size
 - Able to start a new game whenever
 
-Splash Page (DONE)
+Splash Page **(DONE)**
 - create a splash page
