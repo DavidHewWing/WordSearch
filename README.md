@@ -2,18 +2,16 @@
 
 https://docs.google.com/document/d/17dFY9G46XMGz1VpLOxHcBZySqXVQ40xMjXcd8cJXeks/edit
 
-**Still need to do: Add images to README, explain algorithm on README and APPLY!**
-
 ### Features of the Word Search :tada::green_heart:
 1. It has at least a 10x10 grid.
 2. It contains at least **Swift, Kotlin, ObjectiveC, Variable, Java, Mobile**.
-3. Keeps track of how many words a user has found
-4. Randomizes the words are placed
-5. Swipe over the word to select the word
-6. Able to keep on playing.
-7. Has a slick UI with drawer menu
-8. Able to add which words you want to the word search up to a limit
-9. Able to pick a range of grid sizes 10 -> 13
+3. Keeps track of how many words a user has found.
+4. Randomizes the placement of the words.
+5. Swipe over the word to select it.
+6. Replayable.
+7. Has a slick UI with drawer menu.
+8. Able to add which words you want to the word search up to a limit.
+9. Able to pick a range of grid sizes 10 -> 13.
 
 ### Screen Shots :camera:
  
@@ -27,7 +25,7 @@ From the Challenge Docs :book:
 
 **The game is replayable!** :tada:
 
-**You can swip to select a word** :tada:
+**You can swipe to select a word** :tada:
 
 **You can choose words to add into the word search!** :tada:
 
