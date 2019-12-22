@@ -27,9 +27,9 @@ From the Challenge Docs :book:
 
 **You can choose words to add into the word search!** :tada:
 
-| Swiping Feature | Setup | Drawer | Splash |
-| --- | --- | --- | --- |
-| <img src="https://github.com/DavidHewWing/WordSearch/blob/master/pictures/demo.gif" width="200"> | <img src="https://github.com/DavidHewWing/WordSearch/blob/master/pictures/setup.png" width="200"> | <img src="https://github.com/DavidHewWing/WordSearch/blob/master/pictures/drawer.png" width="200"> | <img src="https://github.com/DavidHewWing/WordSearch/blob/master/pictures/splash.png" width="200">
+| Swiping Feature | Setup | Drawer |
+| --- | --- | --- |
+| <img src="https://github.com/DavidHewWing/WordSearch/blob/master/pictures/demo.gif" width="200"> | <img src="https://github.com/DavidHewWing/WordSearch/blob/master/pictures/setup.png" width="200"> | <img src="https://github.com/DavidHewWing/WordSearch/blob/master/pictures/drawer.png" width="200"> |
 
 ### Tasks :pencil:
 Display random letters on a grid. **(DONE)**
@@ -50,5 +50,3 @@ Add the User Input **(DONE)**
 - Able to switch grid size
 - Able to start a new game whenever
 
-Splash Page **(DONE)**
-- create a splash page
