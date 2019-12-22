@@ -1,5 +1,8 @@
 # WordSearch - :punch::clap:
 
+### TODO
+* Testing - Optimization
+
 ### Features of the Word Search :tada::green_heart:
 1. It has at least a 10x10 grid.
 2. It contains at least **Swift, Kotlin, ObjectiveC, Variable, Java, Mobile**.
