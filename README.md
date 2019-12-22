@@ -1,7 +1,7 @@
 # WordSearch - :punch::clap:
 
 ### TODO
-* Testing - Optimization
+* Testing - Optimization - For All Application
 
 ### Features of the Word Search :tada::green_heart:
 1. It has at least a 10x10 grid.
