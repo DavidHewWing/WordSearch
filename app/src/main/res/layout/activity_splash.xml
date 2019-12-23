@@ -20,7 +20,7 @@
                 android:layout_marginStart="8dp" android:layout_marginTop="8dp"
                 app:layout_constraintTop_toTopOf="parent"/>
         <TextView
-                android:text="Shopify Challenge Fall 2019"
+                android:text="Word Search Shopify"
                 android:textSize="18dp"
                 android:textColor="#000"
                 android:layout_width="wrap_content"
